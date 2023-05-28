@@ -27,5 +27,15 @@ fn ls(args: [&str;2]) -> String {
             )
         .expect("Fallo from_utf8")
         .to_string()
+        .to_html()
 }
 
+trait ToHTML{
+    fn to_html(&self) -> String;
+}
+
+impl ToHTML for String {
+    fn to_html(&self) -> String {
+        self.replace("\n", "<br>")
+    }
+}
