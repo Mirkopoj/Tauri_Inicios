@@ -7,10 +7,14 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::path::Path;
 
+extern crate serde_big_array;
+
+use serde_big_array::BigArray;
+use serde::{Serialize, Deserialize};
 
 fn main() {
   tauri::Builder::default()
-    .invoke_handler(tauri::generate_handler![greet, ls, button, button1])
+    .invoke_handler(tauri::generate_handler![greet, ls, button, button1, grafico])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }
@@ -67,4 +71,19 @@ fn button1() -> String {
         Ok(_) => print!("{} contains:\n{}", display, s),
     }
     s
+}
+
+#[derive(Serialize, Deserialize)]
+struct Graph {
+    #[serde(with = "BigArray")]
+    arr: [i32; 1000],
+}
+
+#[tauri::command]
+fn grafico() -> Graph {
+    let mut ret = Graph{ arr: [0;1000] };
+    for i in 0..1000 {
+        ret.arr[i as usize] = (f64::sin(i as f64/100.0)*100.0) as i32;
+    }
+    ret
 }
