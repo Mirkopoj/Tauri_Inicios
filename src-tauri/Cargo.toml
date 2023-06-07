@@ -18,8 +18,9 @@ tauri-build = { version = "1.3.0", features = [] }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 tauri = { version = "1.3.0", features = [] }
-rusb = "0.9.2"
+rusb = { version = "0.9.2", features = ["vendored"] }
 serde-big-array = "0.5.1"
+serialport = "4.2.1"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.

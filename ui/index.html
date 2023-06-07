@@ -35,26 +35,21 @@
 		
 		<button onclick = "clickText1()">¡Apretá el botón para ver el gráfico!</button>
 		<p id="btn1"></p>
-		<div id="tester" style="width:600px;height:250px;"></div>
+		<div id="tester" style="width:800px;height:300px;"></div>
 		<script>
-			function clickText1(){
-				invoke('button1')
-					.then((response)=>{
-						window.btn1.innerHTML = response
-					})
-			}
 			TESTER = document.getElementById('tester');
-			var x = [];
-			for (var i=1;i<=10;i=i+0.01){
-				x.push(i);
+			function clickText1(){
+				invoke('grafico').then((response)=>{
+					Plotly.newPlot( 
+						TESTER, [{
+								x: response.x,
+								y: response.y, 
+							}], {
+								margin: { t: 0 } 
+							} 
+					);
+				})
 			}
-			invoke('grafico').then((response)=>{
-				console.log(response);
-				Plotly.newPlot( TESTER, [{
-				x: x,
-				y: response.arr }], {
-				margin: { t: 0 } } );
-			})
 		</script>
 	</body>
 </html>

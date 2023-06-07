@@ -1,20 +1,20 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::process::Command;
-use std::str;
-use std::fs::File;
-use std::io::prelude::*;
-use std::path::Path;
+mod buttons;
+use buttons::button;
 
-extern crate serde_big_array;
+mod commands;
+use commands::ls;
 
-use serde_big_array::BigArray;
-use serde::{Serialize, Deserialize};
+mod grafico;
+use grafico::grafico;
+
+mod usb;
 
 fn main() {
   tauri::Builder::default()
-    .invoke_handler(tauri::generate_handler![greet, ls, button, button1, grafico])
+    .invoke_handler(tauri::generate_handler![greet, ls, button, grafico])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }
@@ -22,68 +22,4 @@ fn main() {
 #[tauri::command]
 fn greet(name: &str) -> String {
    format!("Holii, {}!", name)
-}
-
-#[tauri::command]
-fn ls(args: [&str;2]) -> String {
-    str::from_utf8(
-        &Command::new("ls")
-                .args(&args)
-                .output()
-                .expect("ou nou fallou")
-                .stdout
-            )
-        .expect("Fallo from_utf8")
-        .to_string()
-        .to_html()
-}
-
-trait ToHTML{
-    fn to_html(&self) -> String;
-}
-
-impl ToHTML for String {
-    fn to_html(&self) -> String {
-        self.replace("\n", "<br>")
-    }
-}
-
-#[tauri::command]
-fn button() -> String {
-    format!("Apretaste el botón!!")}
-
-#[tauri::command]
-fn button1() -> String {
-    // Create a path to the desired file
-    let path = Path::new("hello.txt");
-    let display = path.display();
-
-    // Open the path in read-only mode, returns `io::Result<File>`
-    let mut file = match File::open(&path) {
-        Err(why) => panic!("couldn't open {}: {}", display, why),
-        Ok(file) => file,
-    };
-
-    // Read the file contents into a string, returns `io::Result<usize>`
-    let mut s = String::new();
-    match file.read_to_string(&mut s) {
-        Err(why) => panic!("couldn't read {}: {}", display, why),
-        Ok(_) => print!("{} contains:\n{}", display, s),
-    }
-    s
-}
-
-#[derive(Serialize, Deserialize)]
-struct Graph {
-    #[serde(with = "BigArray")]
-    arr: [i32; 1000],
-}
-
-#[tauri::command]
-fn grafico() -> Graph {
-    let mut ret = Graph{ arr: [0;1000] };
-    for i in 0..1000 {
-        ret.arr[i as usize] = (f64::sin(i as f64/100.0)*100.0) as i32;
-    }
-    ret
 }
